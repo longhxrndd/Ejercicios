@@ -1,0 +1,31 @@
+public class ContactFutureHandler {
+    @future(callout=true)
+    public static void ContactFuture (String id, String idContact) {
+        Http http = new Http();
+        HttpRequest request = new HttpRequest();
+        request.setEndpoint('https://procontacto-reclutamiento-default-rtdb.firebaseio.com/contacts/' + id + '.json');
+        request.setMethod('GET');
+        request.setHeader('Content-Type', 'application/json;charset=UTF-8');
+        
+        try {
+            HttpResponse response = http.send(request);
+            if (response.getStatusCode() == 200) {
+                // Deserializar el JSON
+                Map<String, Object> responseBody = (Map<String, Object>) JSON.deserializeUntyped(response.getBody());
+                System.debug(responseBody);
+                // Obtener el email
+                String email = (String) responseBody.get('email');
+                
+                // Actualizar el contacto con el correo obtenido
+                if (email != null) {
+                    Contact contact = new Contact(Id = idContact, Email = email, idprocontacto__c = id);
+                    update contact;
+                }
+            } else {
+                System.debug('Failed to get response. Status code: ' + response.getStatusCode());
+            }
+        } catch (Exception e) {
+            System.debug('Error: ' + e.getMessage());
+        }
+    }
+}

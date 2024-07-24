@@ -1,0 +1,9 @@
+trigger Contacthandler on Contact (before insert, before update) {
+    for(contact cc : trigger.new){
+        cc.idprocontacto__c = '-O22UII9rbCzRE77MDHq';
+        if(cc.Email == '' || cc.Email == null){
+            ContactFutureHandler.ContactFuture(cc.idprocontacto__c, cc.Id);
+        }
+        
+    }
+}
